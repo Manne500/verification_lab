@@ -1,9 +1,9 @@
 module lab_02;
 
     class Packet;
-        rand bit [3:0] src;
-        rand bit [3:0] dest;
-        rand bit [7:0] payload [];
+        rand logic [3:0] src;
+        rand logic [3:0] dest;
+        rand logic [7:0] payload [];
 
         constraint payload_size {payload.size > 0; payload.size < 15;}
         // constraint payload_size_conflict {payload.size == 5;}
@@ -19,8 +19,8 @@ module lab_02;
 
 
     class Bus;
-        rand bit[15:0] addr;
-        rand bit[31:0] data;
+        rand logic[15:0] addr;
+        rand logic[31:0] data;
 
         constraint address_rule {addr[7:0] == 'h01;}
         constraint data_rule1 {data[15:0] == 'hffff;}
@@ -29,8 +29,8 @@ module lab_02;
 
 
     class CylicIntro;
-        rand bit [2:0] d_normal;
-        randc bit [2:0] d_cylic;
+        rand logic [2:0] d_normal;
+        randc logic [2:0] d_cylic;
     endclass
 
 
@@ -145,5 +145,5 @@ module lab_02;
         // Task 4
 
     end
-    
+
 endmodule

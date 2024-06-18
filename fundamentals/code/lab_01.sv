@@ -2,7 +2,7 @@ module lab_01;
 
     logic [7:0] data;
 
-    typedef enum bit[2:0] {INIT, START, S1, S2, S3, S4, S5, S6} state_t;
+    typedef enum logic[2:0] {INIT, START, S1, S2, S3, S4, S5, S6} state_t;
     state_t my_state;
 
 
