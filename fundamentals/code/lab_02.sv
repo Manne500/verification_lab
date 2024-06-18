@@ -23,8 +23,8 @@ module lab_02;
 
 
     class Bus;
-        rand logic[15:0] addr;
-        rand logic[31:0] data;
+        rand logic [15:0] addr;
+        rand logic [31:0] data;
 
         constraint address_rule {addr[7:0] == 'h01;}
         constraint data_rule1 {data[15:0] == 'hffff;}
@@ -35,6 +35,19 @@ module lab_02;
     class CylicIntro;
         rand logic [2:0] d_normal;
         randc logic [2:0] d_cylic;
+    endclass
+
+
+    class PrePostRandomization;
+        rand logic [2:0] data;
+
+        function void pre_randomize();
+            $display("Pre randomiztion data = %d", data);
+        endfunction
+
+        function void post_randomize();
+            $display("Post randomiztion data = %d", data);
+        endfunction
     endclass
 
 
@@ -118,12 +131,23 @@ module lab_02;
     endclass: Test5
 
 
+    class Test6;
+        task run;
+            PrePostRandomization ppr;
+            ppr = new();
+            result = ppr.randomize();
+            result = ppr.randomize();
+        endtask
+    endclass: Test6
+
+
     initial begin
         Test1 test1;
         Test2 test2;
         Test3 test3;
         Test4 test4;
         Test5 test5;
+        Test6 test6;
 
         test1 = new();
         test1.run();        
@@ -139,6 +163,9 @@ module lab_02;
 
         test5 = new();
         test5.run();
+
+        test6 = new();
+        test6.run();
 
         // Task 1
 
