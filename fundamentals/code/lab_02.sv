@@ -1,6 +1,10 @@
 module lab_02;
 
+    int result;
+
+
     class Packet;
+        logic [3:0] non_random;  // Non-random memeber (not affected by randomize)
         rand logic [3:0] src;
         rand logic [3:0] dest;
         rand logic [7:0] payload [];
@@ -40,7 +44,7 @@ module lab_02;
             packet = new();
 
             repeat(8) begin
-                packet.randomize;
+                result = packet.randomize;  // The same as packet.randomize();
                 $displayh("%p", packet);
             end
             $display("");
@@ -54,7 +58,7 @@ module lab_02;
             packet = new();
 
             repeat(8) begin
-                packet.randomize;
+                result = packet.randomize();
                 $displayh("%p", packet);
             end
             $display("");
@@ -68,7 +72,7 @@ module lab_02;
             bus = new();
 
             repeat(8) begin
-                bus.randomize;
+                result = bus.randomize();
                 $displayh("%p", bus);
             end
             $display("");
@@ -85,14 +89,14 @@ module lab_02;
             bus.data_rule2.constraint_mode(0);  // Turn constraint off
             
             repeat(4) begin
-                bus.randomize;
+                result = bus.randomize();
                 $displayh("%p", bus);
             end
 
             bus.data_rule1.constraint_mode(1);  // Turn constraint on
 
             repeat(4) begin
-                bus.randomize;
+                result = bus.randomize();
                 $displayh("%p", bus);
             end
             $display("");
@@ -106,7 +110,7 @@ module lab_02;
             c = new();
 
             repeat(8) begin
-                c.randomize;
+                result = c.randomize();
                 $displayh("%p", c);
             end
             $display("");
