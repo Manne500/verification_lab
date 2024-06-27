@@ -4,13 +4,10 @@ import tb_pkg::*;
 // We will use the Randomizer to generate random constrained stimuli.
 //------------------------------------------------------------------------------------------------
 class RANDOMIZER;
-    rand opcode op;
-    rand logic[31:0] a;
-    rand logic[31:0] b;
-    constraint no_accumulation {
-        op != MAC; 
-        op != ACC;
-    }
+    // Task 2: Modify this class so that we can randomize 
+    randc opcode op;
+    rand logic[7:0] a;
+    rand logic[7:0] b;
 endclass
 
 module simple_alu_tb;
@@ -22,9 +19,9 @@ module simple_alu_tb;
     logic           tb_clock;
     logic           tb_reset_n;
     logic           tb_start_bit;
-    logic [31:0]    tb_a;
-    logic [31:0]    tb_b;
-    logic [31:0]    tb_c;
+    logic [7:0]    tb_a;
+    logic [7:0]    tb_b;
+    logic [7:0]    tb_c;
     logic [7:0]     tb_max_count;
     int             errors;
     int             data_checked;
@@ -131,21 +128,30 @@ module simple_alu_tb;
     // Section 8
     // Functional coverage definitions. Expand on this!!!
     //------------------------------------------------------------------------------
+    
     covergroup basic_fcov @(negedge tb_clock);
-
-        data : coverpoint tb_c {
-            wildcard bins even = { 32'b???????0 };
-            wildcard bins odd  = { 32'b???????1 };
-        }
-        reset : coverpoint tb_reset_n {
+        reset:coverpoint tb_reset_n{
             bins reset = { 0 };
             bins run=    { 1 };
         }
-        
-        state_cross : cross tb_opcode, reset;
-    endgroup
+        a:coverpoint tb_a{
+            bins zero = {0};
+            bins values[4] = {[1:$]};
+        }
+        b:coverpoint tb_b{
+            bins zero = {0};
+            bins values[4]= {[1:$]};
+        }
+        op:coverpoint tb_opcode{
+            bins ops[]={[0:$]};
+        }
+        c:coverpoint tb_c{
+            bins zero = {0};
+            bins values[4]= {[1:$]};
+        }
+    endgroup: basic_fcov
 
-    basic_fcov coverage;
+    basic_fcov coverage_instance;
 
 
 
@@ -157,7 +163,11 @@ module simple_alu_tb;
     //------------------------------------------------------------------------------
     task test_case();
         reset(.delay(0), .length(2));
-        do_math(1,1,ADD);
+        if(randy.randomize())
+            $display("Randomization done! :D");
+        else 
+           $error("Failed to randomize :(");
+        do_math(randy.a,randy.b,randy.op);
         reset(.delay(10), .length(2));
         assert (tb_c == 0) 
             $display ("Output reset");
@@ -174,15 +184,17 @@ module simple_alu_tb;
     //------------------------------------------------------------------------------
     initial begin
         // Here we can call our tests. Start by initializing our coverage!
-        coverage = new();
-        if(randy.randomize())
-            $display("Randomization done! :D");
-        else 
-            $error("Failed to randomize :(");
+        coverage_instance = new();
+        
+        //Uncomment this in 
+        //if(randy.randomize())
+        //    $display("Randomization done! :D");
+        //else 
+        //    $error("Failed to randomize :(");
         $display("*****************************************************");
         $display("Starting Tests");
         $display("*****************************************************");
-        repeat (2)
+        repeat (20)
         test_case();
         $display("*****************************************************");
         $display("Tests Finished!");
