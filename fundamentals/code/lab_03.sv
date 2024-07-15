@@ -1,7 +1,5 @@
 module lab_03;
 
-    int result;
-
 
     class Test1;
         task run;
