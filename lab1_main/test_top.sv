@@ -5,9 +5,9 @@ import tb_pkg::*;
 //------------------------------------------------------------------------------------------------
 class RANDOMIZER;
     // Task 2: Modify this class so that we can randomize 
-    randc opcode op;
-    rand logic[7:0] a;
-    rand logic[7:0] b;
+    opcode op;
+    logic[7:0] a;
+    logic[7:0] b;
 endclass
 
 module simple_alu_tb;
@@ -23,8 +23,6 @@ module simple_alu_tb;
     logic [7:0]    tb_b;
     logic [7:0]    tb_c;
     logic [7:0]     tb_max_count;
-    int             errors;
-    int             data_checked;
     opcode          tb_opcode;
     
 
@@ -38,8 +36,6 @@ module simple_alu_tb;
         tb_start_bit = 0;
         tb_a = 0;
         tb_b = 0;
-        errors = 0;
-        data_checked = 0;
         tb_max_count = 0;
     end
 
@@ -112,6 +108,10 @@ module simple_alu_tb;
     // Task to simplify generation of signals.
     //------------------------------------------------------------------------------
     task automatic do_math(int a,int b,opcode code);
+        if(randy.randomize())
+            $display("Randomization done! :D");
+        else 
+           $error("Failed to randomize :(");
         $display("%0t do_math:   Opcode:%0s     First number=%0d Second Value=%0d",$time(),code.name(), a, b);
         @(posedge tb_clock);
         tb_start_bit <= 1;
@@ -134,21 +134,10 @@ module simple_alu_tb;
             bins reset = { 0 };
             bins run=    { 1 };
         }
-        a:coverpoint tb_a{
-            bins zero = {0};
-            bins values[4] = {[1:$]};
-        }
-        b:coverpoint tb_b{
-            bins zero = {0};
-            bins values[4]= {[1:$]};
-        }
-        op:coverpoint tb_opcode{
-            bins ops[]={[0:$]};
-        }
-        c:coverpoint tb_c{
-            bins zero = {0};
-            bins values[4]= {[1:$]};
-        }
+    //Task 3: Expand our coverage...
+    
+
+    //Task 5: Add some crosses aswell to get some granularity going!
     endgroup: basic_fcov
 
     basic_fcov coverage_instance;
@@ -158,17 +147,17 @@ module simple_alu_tb;
 
     //------------------------------------------------------------------------------
     // Section 9
-    // Test case task
+    // Task 4: Now change your test case , and the number of times you run it so that your input stim
     //Here we will start our meat and potatoes of the test.
     //------------------------------------------------------------------------------
     task test_case();
         reset(.delay(0), .length(2));
-        if(randy.randomize())
-            $display("Randomization done! :D");
-        else 
-           $error("Failed to randomize :(");
-        do_math(randy.a,randy.b,randy.op);
+
+        repeat(2)
+        do_math(1,2,Add);
+
         reset(.delay(10), .length(2));
+        // Task 1: The DUT is causing this assertion to be hit...
         assert (tb_c == 0) 
             $display ("Output reset");
         else
@@ -186,7 +175,7 @@ module simple_alu_tb;
         // Here we can call our tests. Start by initializing our coverage!
         coverage_instance = new();
         
-        //Uncomment this in 
+        //Uncomment this to try randomizing internal randomizable variables.
         //if(randy.randomize())
         //    $display("Randomization done! :D");
         //else 
@@ -194,7 +183,6 @@ module simple_alu_tb;
         $display("*****************************************************");
         $display("Starting Tests");
         $display("*****************************************************");
-        repeat (20)
         test_case();
         $display("*****************************************************");
         $display("Tests Finished!");

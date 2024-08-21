@@ -12,7 +12,7 @@ module simple_alu(
     );
 
     //Internal Logic
-    logic [7:0] a_reg,b_reg,internal_result,n_internal_result;
+    logic [7:0] internal_result,n_internal_result;
 
 
 //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
@@ -21,7 +21,7 @@ module simple_alu(
     always_ff @(posedge clock or negedge reset_n) begin
         // Asynchronous reset
         if(~reset_n) begin
-            //internal_result<='0;
+            
         end
         else begin
             internal_result <= n_internal_result;
@@ -29,9 +29,9 @@ module simple_alu(
  
     end
 
-    //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-    //Combinational logic
-    //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+//<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+//Combinational logic
+//<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
     always_comb begin
     
