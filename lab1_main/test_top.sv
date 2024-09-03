@@ -6,8 +6,8 @@ import tb_pkg::*;
 class RANDOMIZER;
     // Task 2: Modify this class so that we can randomize 
     opcode op;
-    logic[7:0] a;
-    logic[7:0] b;
+    logic[7:0] operand_1;
+    logic[7:0] operand_2;
 endclass
 
 module simple_alu_tb;
@@ -19,9 +19,9 @@ module simple_alu_tb;
     logic           tb_clock;
     logic           tb_reset_n;
     logic           tb_start_bit;
-    logic [7:0]    tb_a;
-    logic [7:0]    tb_b;
-    logic [7:0]    tb_c;
+    logic [7:0]    tb_operand_1;
+    logic [7:0]    tb_operand_2;
+    logic [7:0]    tb_result;
     logic [7:0]     tb_max_count;
     opcode          tb_opcode;
     
@@ -34,8 +34,8 @@ module simple_alu_tb;
         tb_clock = 0;
         tb_reset_n = 0;
         tb_start_bit = 0;
-        tb_a = 0;
-        tb_b = 0;
+        tb_operand_1 = 0;
+        tb_operand_2 = 0;
         tb_max_count = 0;
     end
 
@@ -47,9 +47,9 @@ module simple_alu_tb;
         .clock(tb_clock),
         .reset_n(tb_reset_n),
         .start(tb_start_bit),
-        .a(tb_a),
-        .b(tb_b),
-        .c(tb_c),
+        .a(tb_operand_1),
+        .b(tb_operand_2),
+        .c(tb_result),
         .mode_select(tb_opcode)
     );
     RANDOMIZER randy = new();
@@ -69,12 +69,12 @@ module simple_alu_tb;
     //------------------------------------------------------------------------------
     task automatic reset(int delay, int length);
         $display("%0t reset():            Starting delay=%0d length=%0d",$time(), delay, length);
-        while (delay-- > 0) begin
-            @(posedge tb_clock);
-        end
+        //Repeat doing nothing for the clock delay
+        repeat(delay) @(posedge tb_clock);
+
         tb_reset_n <= 0;
         $display("%0t reset():            Reset activated",$time());
-        // Min 1 clock that reset bit is active
+        // Min 1 clock that reset bit is active. Use a do while loop for that!
         do begin
             @(posedge tb_clock);
         end while (--length > 0);
@@ -115,12 +115,12 @@ module simple_alu_tb;
         $display("%0t do_math:   Opcode:%0s     First number=%0d Second Value=%0d",$time(),code.name(), a, b);
         @(posedge tb_clock);
         tb_start_bit <= 1;
-        tb_a <= a;
-        tb_b <= b;
+        tb_operand_1 <= a;
+        tb_operand_2 <= b;
         tb_opcode<= code;
         @(posedge tb_clock);
-        tb_a <= '0;
-        tb_b <= '0;
+        tb_operand_1 <= '0;
+        tb_operand_2 <= '0;
         tb_start_bit <= 0;
     endtask
 
@@ -154,11 +154,11 @@ module simple_alu_tb;
         reset(.delay(0), .length(2));
 
         repeat(2)
-        do_math(1,2,Add);
+        do_math(1,2,ADD);
 
         reset(.delay(10), .length(2));
         // Task 1: The DUT is causing this assertion to be hit...
-        assert (tb_c == 0) 
+        assert (tb_result == 0) 
             $display ("Output reset");
         else
             $error("Reset doesn't clear output!");
