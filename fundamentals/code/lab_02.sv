@@ -4,7 +4,8 @@ module lab_02;
 
 
     class Packet;
-        logic [3:0] non_random;  // Non-random memeber (not affected by randomize)
+        logic [3:0] non_random;  // Non-random member (not affected by randomize)
+
         rand logic [3:0] src;
         rand logic [3:0] dest;
         rand logic [7:0] payload [];
@@ -106,7 +107,7 @@ module lab_02;
                 $displayh("%p", bus);
             end
 
-            bus.data_rule1.constraint_mode(1);  // Turn constraint on
+            bus.data_rule1.constraint_mode(1);  // Turn constraint back on
 
             repeat(4) begin
                 result = bus.randomize();
@@ -122,7 +123,7 @@ module lab_02;
             CylicIntro c;
             c = new();
 
-            repeat(8) begin
+            repeat(16) begin
                 result = c.randomize();
                 $displayh("%p", c);
             end
@@ -137,8 +138,45 @@ module lab_02;
             ppr = new();
             result = ppr.randomize();
             result = ppr.randomize();
+            $display("");
         endtask
     endclass: Test6
+
+
+    class Task2;
+        task run;
+            Packet packet;
+            packet = new();
+
+            repeat(8) begin
+                result = packet.randomize(src, payload);
+                $displayh("%p", packet);
+            end
+            $display("");
+        endtask
+    endclass: Task2
+
+
+    class MyBus extends Bus;
+        constraint address_rule {
+            !(addr[7:0] inside {8'hff, [8'h11:8'h77]});
+        }
+    endclass
+
+
+    class Task3;
+        task run;
+            MyBus bus;
+            bus = new();
+
+            bus.data_rule1.constraint_mode(0);
+            repeat(8) begin
+                result = bus.randomize();
+                $displayh("%p", bus);
+            end
+            $display("");
+        endtask;
+    endclass: Task3
 
 
     initial begin
@@ -148,6 +186,9 @@ module lab_02;
         Test4 test4;
         Test5 test5;
         Test6 test6;
+
+        Task2 task2;
+        Task3 task3;
 
         test1 = new();
         test1.run();        
@@ -168,12 +209,18 @@ module lab_02;
         test6.run();
 
         // Task 1
+        // Uncomment the line in the "Packet" class containing the "payload_size_conflict" constraint and see what transpires. What on earth is happening?
 
         // Task 2
+        // Create a class named "Task2" and in its "run" task call "randomize" in a way to only apply randomization to "src" and "payload" members of "Packet"
+        task2 = new();
+        task2.run();
 
         // Task 3
-
-        // Task 4
+        // Create a class named "MyBus" that extends "Bus" and change its "address_rule" so that "addr[7:0]" can not be 8'hff and also not in the range 8'h11:8'h77
+        // Randomize and test "MyBus" in a new class named "Task3", but turn off "data_rule1"
+        task3 = new();
+        task3.run();
 
     end
 
