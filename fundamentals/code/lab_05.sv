@@ -20,7 +20,7 @@ module lab_05 #(parameter PERIOD = 10) (
 
 
     initial clk = 0;
-    
+
 
     always #(PERIOD/2) clk = ~clk;
 
@@ -89,7 +89,7 @@ module lab_05 #(parameter PERIOD = 10) (
         // Change the testbench to achieve 100% coverage for covergroup_1
 
         // Task 2
-        // Change covergroup_2's data coverpoint so that it only creates 1 bin for { 0, 1, 2, 5, 100 } instead of 5 indidual bins
+        // Change covergroup_2's data coverpoint so that it only creates 1 bin for { 0, 1, 2, 5, 100 } instead of 5 individual bins
 
         // Task 3
         // Change covergroup_3 and achieve the same functionality without using the 'default' keyword        
