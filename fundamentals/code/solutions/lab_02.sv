@@ -143,6 +143,42 @@ module lab_02;
     endclass: Test6
 
 
+    class Task2;
+        task run;
+            Packet packet;
+            packet = new();
+
+            repeat(8) begin
+                result = packet.randomize(src, payload);
+                $displayh("%p", packet);
+            end
+            $display("");
+        endtask
+    endclass: Task2
+
+
+    class MyBus extends Bus;
+        constraint address_rule {
+            !(addr[7:0] inside {8'hff, [8'h11:8'h77]});
+        }
+    endclass
+
+
+    class Task3;
+        task run;
+            MyBus bus;
+            bus = new();
+
+            bus.data_rule1.constraint_mode(0);
+            repeat(8) begin
+                result = bus.randomize();
+                $displayh("%p", bus);
+            end
+            $display("");
+        endtask;
+    endclass: Task3
+
+
     initial begin
         Test1 test1;
         Test2 test2;
@@ -151,6 +187,8 @@ module lab_02;
         Test5 test5;
         Test6 test6;
 
+        Task2 task2;
+        Task3 task3;
 
         test1 = new();
         test1.run();        
@@ -175,10 +213,14 @@ module lab_02;
 
         // Task 2
         // Create a class named "Task2" and in its "run" task call "randomize" in a way to only apply randomization to "src" and "payload" members of "Packet"
+        task2 = new();
+        task2.run();
 
         // Task 3
         // Create a class named "MyBus" that extends "Bus" and change its "address_rule" so that "addr[7:0]" can not be 8'hff and also not in the range 8'h11:8'h77
         // Randomize and test "MyBus" in a new class named "Task3", but turn off "data_rule1"
+        task3 = new();
+        task3.run();
 
     end
 
